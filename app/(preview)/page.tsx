@@ -10,6 +10,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
+import { CornerDownLeft } from "lucide-react";
 import { Expense, expenseSchema, PartialExpense } from "@/app/api/chat/schema";
 import ExpenseView from "@/components/ExpenseView";
 
@@ -63,17 +64,23 @@ export default function Home() {
             }
           }}
         >
-          <input
-            name="expense"
-            className="bg-zinc-100 rounded-md px-2 py-1.5 w-full outline-none dark:bg-zinc-700 text-zinc-800 dark:text-zinc-300 md:max-w-[500px] max-w-[calc(100dvw-32px)] disabled:text-zinc-400 disabled:cursor-not-allowed placeholder:text-zinc-400"
-            placeholder="Expense a transaction..."
-            value={input}
-            onChange={(event) => {
-              setInput(event.target.value);
-            }}
-            disabled={isLoading}
-            ref={inputRef}
-          />
+          <div className="relative w-full md:max-w-[500px] max-w-[calc(100dvw-32px)]">
+            <input
+              name="expense"
+              className="bg-zinc-100 rounded-md px-2 py-1.5 w-full outline-none dark:bg-zinc-700 text-zinc-800 dark:text-zinc-300 disabled:text-zinc-400 disabled:cursor-not-allowed placeholder:text-zinc-400 pr-10"
+              placeholder="Add an expense"
+              value={input}
+              onChange={(event) => {
+                setInput(event.target.value);
+              }}
+              disabled={isLoading}
+              ref={inputRef}
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 dark:text-zinc-500 flex flex-row gap-2 items-center">
+              <p className="text-sm">Press</p>
+              <CornerDownLeft className="w-4 h-4" />
+            </div>
+          </div>
         </form>
 
         {expenses.length > 0 || isLoading ? (
@@ -98,29 +105,23 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <motion.div className="h-[350px] px-4 w-full md:w-[500px] md:px-0 pt-20">
+          <motion.div className="h-[350px] px-4 w-full md:w-[500px] md:px-0">
             <div className="border rounded-lg p-6 flex flex-col gap-4 text-zinc-500 text-sm dark:border-zinc-700">
-              <p>
-                I was frustrated to always click around different table cells to add my expenses. So I built this product.
+              <p className="text-base text-zinc-800 dark:text-zinc-300">
+              Hate clicking through cells to add expenses? Just type it.
               </p>
               <p>
                 {" "}
-                My name is{" "}
+                I’m{" "}
                 <Link
                   className="text-blue-500 dark:text-blue-400"
-                  href="https://sdk.vercel.ai/docs/ai-sdk-ui/object-generation"
+                  href="https://www.linkedin.com/in/parthmehta98/"
                   target="_blank"
                 >
-                  Parth Mehta.{" "}
+                  Parth Mehta{" "}
                 </Link>
-                Currently a {" "}
-                <Link
-                  className="text-decoration: underline"
-                  href="https://sdk.vercel.ai/docs/ai-sdk-ui/object-generation"
-                  target="_blank"
-                >
-                  builder
-                </Link>{" "} at LinkedIn.
+                — built this so one line like “Uber $32 last night” is enough.
+                
               </p>
             </div>
           </motion.div>

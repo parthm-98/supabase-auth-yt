@@ -100,26 +100,27 @@ export default function Home() {
         ) : (
           <motion.div className="h-[350px] px-4 w-full md:w-[500px] md:px-0 pt-20">
             <div className="border rounded-lg p-6 flex flex-col gap-4 text-zinc-500 text-sm dark:border-zinc-700">
-              <p className="flex flex-row justify-center gap-4 items-center text-zinc-900 dark:text-zinc-50">
-                <VercelIcon />
-                <span>+</span>
-                <ObjectIcon />
-              </p>
               <p>
-                The useObject hook allows you to create interfaces that
-                represent a structured JSON object that is being streamed.
+                I was frustrated to always click around different table cells to add my expenses. So I built this product.
               </p>
               <p>
                 {" "}
-                Learn more about the{" "}
+                My name is{" "}
                 <Link
                   className="text-blue-500 dark:text-blue-400"
                   href="https://sdk.vercel.ai/docs/ai-sdk-ui/object-generation"
                   target="_blank"
                 >
-                  useObject{" "}
+                  Parth Mehta.{" "}
                 </Link>
-                hook from Vercel AI SDK.
+                Currently a {" "}
+                <Link
+                  className="text-decoration: underline"
+                  href="https://sdk.vercel.ai/docs/ai-sdk-ui/object-generation"
+                  target="_blank"
+                >
+                  builder
+                </Link>{" "} at LinkedIn.
               </p>
             </div>
           </motion.div>

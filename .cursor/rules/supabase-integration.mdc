@@ -1,0 +1,36 @@
+---
+alwaysApply: false
+globs: 
+  - "**/api/**/*.ts"
+  - "**/*supabase*"
+  - "**/page.tsx"
+description: "Supabase integration patterns for expense tracking"
+---
+# Supabase Integration Patterns for Expense App
+
+## Current Tech Stack
+- Next.js with App Router
+- TypeScript
+- Supabase for database
+- AI integration with `experimental_useObject`
+- Zod schema validation
+
+## Key Files
+- API Route: `app/api/chat/route.ts` 
+- Frontend: `app/page.tsx`
+- Schema: `app/api/chat/schema.ts`
+
+## Database Schema
+- Table: `expenses`
+- Columns: date (text), details (text), participants (text[]), category (text), amount (numeric)
+
+## Code Patterns
+- Always use environment variables for Supabase config
+- Handle errors with proper logging and user feedback
+- Use server-side operations in API routes, client-side for fetching
+- Follow the established schema validation patterns
+
+## Current Implementation Status
+- ✅ Environment variables configured
+- ✅ Supabase client setup
+- 🔄 Working on: API route modification and frontend data fetching

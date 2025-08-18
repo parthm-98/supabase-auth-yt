@@ -1,0 +1,28 @@
+---
+alwaysApply: false
+globs: 
+  - "**/api/expenses/**/*.ts"
+  - "**/api/chat/**/*.ts"  
+  - "**/lib/database*"
+description: "CRUD operations for expense management"
+---
+
+# Expense CRUD Operations
+
+## Operations to Implement
+- ✅ CREATE (already working via chat API)
+- 🔄 READ (fetch all expenses, get by ID)
+- 🔄 UPDATE (edit existing expenses)  
+- 🔄 DELETE (remove expenses)
+
+## API Route Structure
+- GET `/api/expenses` - List all expenses
+- GET `/api/expenses/[id]` - Get single expense
+- PUT `/api/expenses/[id]` - Update expense
+- DELETE `/api/expenses/[id]` - Delete expense
+
+## Patterns
+- Consistent error handling across all operations
+- Always validate data with Zod schemas
+- Return standardized response formats
+- Use proper HTTP status codes

@@ -65,7 +65,12 @@ export default function Home() {
     api: "/api/chat",
     schema: expenseSchema,
     onFinish({ object }) {
+      console.log('🔍 onFinish called with:', object);
+      console.log('🔍 Current user:', user);
+      console.log('🔍 Current expenses count:', expenses.length);
+      
       if (object != null) {
+        console.log('🔍 Object is not null, creating expense...');
         // Add the new expense to the beginning of the list
         const newExpense: ExpenseWithId = {
           id: Date.now(), // Temporary ID for UI, will be replaced when loaded from DB
@@ -77,15 +82,36 @@ export default function Home() {
           user_id: user?.id || '',
           created_at: new Date().toISOString(),
         };
-        setExpenses((prev) => [newExpense, ...prev]);
+        
+        console.log('🔍 New expense created:', newExpense);
+        
+        setExpenses((prev) => {
+          const updated = [newExpense, ...prev];
+          console.log('🔍 Previous expenses:', prev);
+          console.log('🔍 Updated expenses array:', updated);
+          return updated;
+        });
+        
         setInput("");
         inputRef.current?.focus();
+        console.log('🔍 Expense added to state successfully');
+      } else {
+        console.log('🔍 Object is null, not creating expense');
       }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('🔍 AI SDK error:', error);
       toast.error("You've been rate limited, please try again later!");
     },
   });
+
+  // Debug: Log expenses state changes
+  useEffect(() => {
+    console.log('🔍 Expenses state changed:', expenses);
+    console.log('🔍 Expenses length:', expenses.length);
+    console.log('🔍 Is loading:', isLoading);
+    console.log('🔍 Object:', object);
+  }, [expenses, isLoading, object]);
 
   const handleDeleteExpense = async (expenseToDelete: ExpenseWithId) => {
     try {

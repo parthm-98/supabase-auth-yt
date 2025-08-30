@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Expense, PartialExpense } from "@/app/api/chat/schema";
+import { Expense, ExpenseWithId } from "@/app/api/chat/schema";
 import ContextMenu from "./ContextMenu";
 
 interface ExpenseViewProps {
-  expense: Expense | PartialExpense;
+  expense: Expense | ExpenseWithId;
   onDelete?: () => void;
   onEdit?: () => void;
 }

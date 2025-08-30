@@ -1,0 +1,56 @@
+# Authentication Flow Implementation Plan
+
+## Overview
+Integrate Google authentication with Supabase in the expense tracker app without breaking existing functionality.
+
+## Implementation Steps (Incremental)
+
+### Phase 1: Setup & Documentation ✅
+- [x] Create authentication flow documentation
+- [x] Set up Google OAuth in Supabase dashboard
+- [x] Configure environment variables
+
+### Phase 2: Basic Authentication Components ✅
+- [x] Create login page (`/login`)
+- [x] Implement Google OAuth redirect
+- [x] Test basic authentication flow
+
+### Phase 3: Integration with Existing App ✅
+- [x] Add authentication check to main page
+- [x] Add logout button to top right
+- [x] Ensure existing expense functionality remains intact
+
+### Phase 4: User-Specific Data
+- [ ] Update database schema with user_id
+- [ ] Modify API routes to include user context
+- [ ] Implement row-level security
+
+### Phase 5: Polish & Testing
+- [ ] Add loading states
+- [ ] Error handling
+- [ ] User profile display
+- [ ] Final testing and cleanup
+
+## Current Status
+- ✅ Existing expense tracking functionality working
+- ✅ Basic project structure in place
+- ✅ Authentication integration complete
+- 🔄 Ready for user-specific data implementation
+
+## What We've Accomplished
+1. **Login Page**: Users can sign in with Google OAuth
+2. **Authentication Check**: Main page now requires authentication
+3. **Logout Button**: Added to top right with user info display
+4. **Preserved Functionality**: All existing expense features work exactly the same
+5. **Seamless UX**: Users get redirected appropriately based on auth status
+
+## Next Steps
+- Implement user-specific expense storage
+- Add row-level security to database
+- Test the complete authentication flow
+
+## Notes
+- Each phase has been tested independently
+- Existing expense functionality remains unchanged
+- Authentication flow is working smoothly
+- Ready to move to Phase 4: User-Specific Data

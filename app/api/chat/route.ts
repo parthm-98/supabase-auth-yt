@@ -1,18 +1,22 @@
 import { openai } from "@ai-sdk/openai";
 import { streamObject } from "ai";
 import { expenseSchema } from "./schema";
-import { createClient } from "@supabase/supabase-js";
-
-// Make sure to replace these with your actual env variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
+  const supabase = createRouteHandlerClient({ cookies });
+  
+  // Get authenticated user
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  
+  if (authError || !user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
   const { expense }: { expense: string } = await req.json();
 
   const result = streamObject({
@@ -36,9 +40,18 @@ export async function POST(req: Request) {
     onFinish: async ({ object }) => {
       if (object?.expense) {
         try {
+          // Convert participants array to comma-separated string for database
+          const expenseData = {
+            ...object.expense,
+            participants: Array.isArray(object.expense.participants) 
+              ? object.expense.participants.join(', ') 
+              : object.expense.participants || '',
+            user_id: user.id
+          };
+
           const { data, error } = await supabase
             .from('Expenses')
-            .insert([object.expense])
+            .insert([expenseData])
             .select()
             .single();
 

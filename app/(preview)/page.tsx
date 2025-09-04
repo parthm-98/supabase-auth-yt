@@ -11,7 +11,7 @@ import Link from "next/link";
 import { CornerDownLeft, LogOut } from "lucide-react";
 import { expenseSchema, ExpenseWithId } from "@/app/api/chat/schema";
 import ExpenseView from "@/components/ExpenseView";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import { loadUserExpenses, deleteUserExpense } from '@/lib/expenses';
 
@@ -21,7 +21,10 @@ export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -64,41 +67,6 @@ export default function Home() {
   const { submit, isLoading, object } = experimental_useObject({
     api: "/api/chat",
     schema: expenseSchema,
-    onFinish({ object }) {
-      console.log('🔍 onFinish called with:', object);
-      console.log('🔍 Current user:', user);
-      console.log('🔍 Current expenses count:', expenses.length);
-      
-      if (object != null) {
-        console.log('🔍 Object is not null, creating expense...');
-        // Add the new expense to the beginning of the list
-        const newExpense: ExpenseWithId = {
-          id: Date.now(), // Temporary ID for UI, will be replaced when loaded from DB
-          category: object.expense.category,
-          amount: object.expense.amount,
-          date: object.expense.date,
-          details: object.expense.details,
-          participants: object.expense.participants,
-          user_id: user?.id || '',
-          created_at: new Date().toISOString(),
-        };
-        
-        console.log('🔍 New expense created:', newExpense);
-        
-        setExpenses((prev) => {
-          const updated = [newExpense, ...prev];
-          console.log('🔍 Previous expenses:', prev);
-          console.log('🔍 Updated expenses array:', updated);
-          return updated;
-        });
-        
-        setInput("");
-        inputRef.current?.focus();
-        console.log('🔍 Expense added to state successfully');
-      } else {
-        console.log('🔍 Object is null, not creating expense');
-      }
-    },
     onError: (error) => {
       console.error('🔍 AI SDK error:', error);
       toast.error("You've been rate limited, please try again later!");
@@ -112,6 +80,39 @@ export default function Home() {
     console.log('🔍 Is loading:', isLoading);
     console.log('🔍 Object:', object);
   }, [expenses, isLoading, object]);
+
+  // Add expense when AI completes
+  useEffect(() => {
+    if (!isLoading && object && user) {
+      const expenseData = object.expense || object;
+      
+      if (expenseData?.category && expenseData?.amount && expenseData?.details && expenseData?.date) {
+        // Check if this expense already exists
+        const exists = expenses.some(exp => 
+          exp.details === expenseData.details && 
+          exp.amount === expenseData.amount &&
+          exp.date === expenseData.date
+        );
+        
+        if (!exists) {
+          const newExpense: ExpenseWithId = {
+            id: Date.now(),
+            category: expenseData.category,
+            amount: expenseData.amount,
+            date: expenseData.date,
+            details: expenseData.details,
+            participants: expenseData.participants || '',
+            user_id: user.id,
+            created_at: new Date().toISOString(),
+          };
+          
+          setExpenses(prev => [newExpense, ...prev]);
+          setInput("");
+          inputRef.current?.focus();
+        }
+      }
+    }
+  }, [isLoading, object, user, expenses]);
 
   const handleDeleteExpense = async (expenseToDelete: ExpenseWithId) => {
     try {
@@ -155,7 +156,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col pt-20 h-dvh bg-white dark:bg-zinc-900">
+    <div className="flex flex-col pt-4 h-dvh bg-white dark:bg-zinc-900">
       {/* Header with logout button */}
       <div className="flex justify-between items-center px-4 mb-8">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">

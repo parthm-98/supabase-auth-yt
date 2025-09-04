@@ -84,7 +84,8 @@ export default function Home() {
   // Add expense when AI completes
   useEffect(() => {
     if (!isLoading && object && user) {
-      const expenseData = object.expense || object;
+      // Handle both object structures: {expense: {...}} and direct expense object
+      const expenseData = (object as any).expense || (object as any);
       
       if (expenseData?.category && expenseData?.amount && expenseData?.details && expenseData?.date) {
         // Check if this expense already exists

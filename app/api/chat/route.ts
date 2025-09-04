@@ -59,44 +59,6 @@ export async function POST(req: Request) {
       ". When no date is supplied, use the current date.",
     prompt: `Please categorize the following expense: "${expense}"`,
     schema: expenseSchema,
-    onFinish: async ({ object }) => {
-      console.log('🔍 Server onFinish called with:', object);
-      console.log('🔍 Server object type:', typeof object);
-      console.log('🔍 Server object keys:', object ? Object.keys(object) : 'null');
-      
-      if (object?.expense) {
-        console.log('🔍 Server object.expense:', object.expense);
-        try {
-          // Convert participants array to comma-separated string for database
-          const expenseData = {
-            ...object.expense,
-            participants: Array.isArray(object.expense.participants) 
-              ? object.expense.participants.join(', ') 
-              : object.expense.participants || '',
-            user_id: user.id
-          };
-
-          console.log('expenseData:', expenseData);
-
-          const { data, error } = await supabase
-            .from('Expenses')
-            .insert([expenseData])
-            .select()
-            .single();
-
-          if (error) {
-            console.error('Error saving expense to Supabase:', error);
-          } else {
-            console.log('Expense saved successfully:', data);
-          }
-        } catch (err) {
-          console.error('Unexpected error saving expense:', err);
-        }
-      } else {
-        console.log('🔍 Server: Object is null or missing expense property');
-        console.log('🔍 Server object structure:', JSON.stringify(object, null, 2));
-      }
-    },
   });
 
   return result.toTextStreamResponse();

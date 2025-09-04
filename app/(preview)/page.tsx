@@ -83,36 +83,78 @@ export default function Home() {
 
   // Add expense when AI completes
   useEffect(() => {
-    if (!isLoading && object && user) {
-      // Handle both object structures: {expense: {...}} and direct expense object
-      const expenseData = (object as any).expense || (object as any);
-      
-      if (expenseData?.category && expenseData?.amount && expenseData?.details && expenseData?.date) {
-        // Check if this expense already exists
-        const exists = expenses.some(exp => 
-          exp.details === expenseData.details && 
-          exp.amount === expenseData.amount &&
-          exp.date === expenseData.date
-        );
+    const saveExpense = async () => {
+      if (!isLoading && object && user) {
+        // Handle both object structures: {expense: {...}} and direct expense object
+        const expenseData = (object as any).expense || (object as any);
         
-        if (!exists) {
-          const newExpense: ExpenseWithId = {
-            id: Date.now(),
-            category: expenseData.category,
-            amount: expenseData.amount,
-            date: expenseData.date,
-            details: expenseData.details,
-            participants: expenseData.participants || '',
-            user_id: user.id,
-            created_at: new Date().toISOString(),
-          };
+        if (expenseData?.category && expenseData?.amount && expenseData?.details && expenseData?.date) {
+          console.log('🔍 Checking expense:', expenseData);
+          console.log('🔍 Current expenses:', expenses.map(e => ({ details: e.details, amount: e.amount, date: e.date })));
           
-          setExpenses(prev => [newExpense, ...prev]);
-          setInput("");
-          inputRef.current?.focus();
+          // Check if this expense already exists
+          const exists = expenses.some(exp => 
+            exp.details === expenseData.details && 
+            exp.amount === expenseData.amount &&
+            exp.date === expenseData.date
+          );
+          
+          console.log('🔍 Expense exists?', exists);
+          
+          if (!exists) {
+            console.log('🔍 Adding new expense...');
+            const newExpense: ExpenseWithId = {
+              id: Date.now(),
+              category: expenseData.category,
+              amount: expenseData.amount,
+              date: expenseData.date,
+              details: expenseData.details,
+              participants: expenseData.participants || '',
+              user_id: user.id,
+              created_at: new Date().toISOString(),
+            };
+            
+            // Save to Supabase
+            try {
+              const response = await fetch('/api/expenses', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  category: expenseData.category,
+                  amount: expenseData.amount,
+                  date: expenseData.date,
+                  details: expenseData.details,
+                  participants: expenseData.participants || '',
+                }),
+              });
+
+              if (response.ok) {
+                const result = await response.json();
+                console.log('🔍 Expense saved to Supabase:', result);
+                
+                // Update local state with the saved expense (including real ID from database)
+                setExpenses(prev => [result.data, ...prev]);
+                setInput("");
+                inputRef.current?.focus();
+                console.log('🔍 Expense added successfully');
+              } else {
+                console.error('🔍 Failed to save expense to Supabase');
+                toast.error('Failed to save expense');
+              }
+            } catch (error) {
+              console.error('🔍 Error saving expense:', error);
+              toast.error('Error saving expense');
+            }
+          } else {
+            console.log('🔍 Expense already exists, not adding');
+          }
         }
       }
-    }
+    };
+
+    saveExpense();
   }, [isLoading, object, user, expenses]);
 
   const handleDeleteExpense = async (expenseToDelete: ExpenseWithId) => {
